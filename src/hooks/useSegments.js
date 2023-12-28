@@ -216,7 +216,7 @@ export default ({
     updateSegAtIndex(currentSegIndexSafe, { [type]: Math.min(Math.max(time, 0), duration) });
   }, [currentSegIndexSafe, getSegApparentEnd, currentCutSeg, duration, updateSegAtIndex]);
 
-  const modifySelectedSegmentTimes = useCallback(async (transformSegment, concurrency = 5) => {
+  const modifySelectedSegmentTimes = useCallback(async (transformSegment, concurrency = 10) => {
     const clampValue = (val) => Math.min(Math.max(val, 0), duration);
 
     let newSegments = await pMap(apparentCutSegments, async (segment) => {

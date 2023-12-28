@@ -54,7 +54,7 @@ const getChaptersInputArgs = (ffmetadataPath) => (ffmetadataPath ? ['-f', 'ffmet
 
 const tryDeleteFiles = async (paths) => pMap(paths, (path) => {
   unlink(path).catch((err) => console.error('Failed to delete', path, err));
-}, { concurrency: 5 });
+}, { concurrency: 10 });
 
 function useFfmpegOperations({ filePath, treatInputFileModifiedTimeAsStart, treatOutputFileModifiedTimeAsStart, needSmartCut, enableOverwriteOutput, outputPlaybackRate }) {
   const shouldSkipExistingFile = useCallback(async (path) => {
@@ -70,7 +70,7 @@ function useFfmpegOperations({ filePath, treatInputFileModifiedTimeAsStart, trea
 
     console.log('Merging files', { paths }, 'to', outPath);
 
-    const durations = await pMap(paths, getDuration, { concurrency: 1 });
+    const durations = await pMap(paths, getDuration, { concurrency: 10 });
     const totalDuration = sum(durations);
 
     let chaptersPath;
@@ -433,7 +433,7 @@ function useFfmpegOperations({ filePath, treatInputFileModifiedTimeAsStart, trea
     }
 
     try {
-      const outFiles = await pMap(segments, maybeSmartCutSegment, { concurrency: 1 });
+      const outFiles = await pMap(segments, maybeSmartCutSegment, { concurrency: 10 });
 
       return outFiles;
     } finally {

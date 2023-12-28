@@ -65,7 +65,7 @@ export default ({ formatTimecode, treatOutputFileModifiedTimeAsStart }) => {
       const renameToPath = getOutPath({ customOutDir, filePath, fileName: getSuffixedFileName(filePath, getSuffix(duration, captureFormat)) });
       await rename(renameFromPath, renameToPath);
       return renameToPath;
-    }, { concurrency: 1 });
+    }, { concurrency: 10 });
 
     return outPaths[0];
   }

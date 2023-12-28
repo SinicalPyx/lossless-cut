@@ -183,7 +183,7 @@ export async function tryMapChaptersToEdl(chapters) {
 export async function createChaptersFromSegments({ segmentPaths, chapterNames }) {
   if (!chapterNames) return undefined;
   try {
-    const durations = await pMap(segmentPaths, (segmentPath) => getDuration(segmentPath), { concurrency: 3 });
+    const durations = await pMap(segmentPaths, (segmentPath) => getDuration(segmentPath), { concurrency: 10 });
     let timeAt = 0;
     return durations.map((duration, i) => {
       const ret = { start: timeAt, end: timeAt + duration, name: chapterNames[i] };
@@ -364,7 +364,7 @@ async function extractNonAttachmentStreams({ customOutDir, filePath, streams, en
       '-map', `0:${index}`, '-c', 'copy', '-f', format, '-y', outPath,
     ];
     return outPath;
-  }, { concurrency: 1 });
+  }, { concurrency: 10 });
 
   const ffmpegArgs = [
     '-hide_banner',
@@ -395,7 +395,7 @@ async function extractAttachmentStreams({ customOutDir, filePath, streams, enabl
       `-dump_attachment:${index}`, outPath,
     ];
     return outPath;
-  }, { concurrency: 1 });
+  }, { concurrency: 10 });
 
   const ffmpegArgs = [
     '-y',
@@ -471,16 +471,16 @@ export async function renderThumbnails({ filePath, from, duration, onThumbnail }
   onThumbnail({ time: from, url });
 
   // Aim for max 3 sec to render all
-  const numThumbs = Math.floor(Math.min(Math.max(3 / (endTime - startTime), 3), 10));
-  // console.log(numThumbs);
+  const numThumbs = Math.floor(Math.min(Math.max(10 / (endTime - startTime), 20), 40));
+  console.log(numThumbs);
 
   const thumbTimes = Array(numThumbs - 1).fill().map((unused, i) => (from + ((duration * (i + 1)) / (numThumbs))));
-  // console.log(thumbTimes);
+  console.log(thumbTimes);
 
   await pMap(thumbTimes, async (time) => {
     url = await renderThumbnail(filePath, time);
     onThumbnail({ time, url });
-  }, { concurrency: 2 });
+  }, { concurrency: 10 });
 }
 
 export async function extractWaveform({ filePath, outPath }) {

@@ -273,13 +273,13 @@ export async function deleteFiles({ paths, deleteIfTrashFails, signal }) {
       if (testFail) throw new Error('test delete failure');
       await unlink(path);
     }, {
-      retries: 3,
+      retries: 6,
       signal,
       onFailedAttempt: async () => {
         console.warn('Retrying delete', path);
       },
     });
-  }, { concurrency: 1 });
+  }, { concurrency: 10 });
 }
 
 export const deleteDispositionValue = 'llc_disposition_remove';
@@ -350,12 +350,12 @@ export function escapeRegExp(string) {
 
 export const readFileSize = async (path) => (await stat(path)).size;
 
-export const readFileSizes = (paths) => pMap(paths, async (path) => readFileSize(path), { concurrency: 5 });
+export const readFileSizes = (paths) => pMap(paths, async (path) => readFileSize(path), { concurrency: 10 });
 
 export function checkFileSizes(inputSize, outputSize) {
   const diff = Math.abs(outputSize - inputSize);
   const relDiff = diff / inputSize;
-  const maxDiffPercent = 5;
+  const maxDiffPercent = 10;
   const sourceFilesTotalSize = prettyBytes(inputSize);
   const outputFileTotalSize = prettyBytes(outputSize);
   if (relDiff > maxDiffPercent / 100) return i18n.t('The size of the merged output file ({{outputFileTotalSize}}) differs from the total size of source files ({{sourceFilesTotalSize}}) by more than {{maxDiffPercent}}%. This could indicate that there was a problem during the merge.', { maxDiffPercent, sourceFilesTotalSize, outputFileTotalSize });
